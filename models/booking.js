@@ -32,11 +32,11 @@ const bookingSchema = new mongoose.Schema({
   },
   unitsConsumed: {
     type: Number,
-    default: 10,
+    default: 0,
   },
   cost: {
     type: Number,
-    default: 100,
+    default: 0,
   },
   createdAt: {
     type: Date,

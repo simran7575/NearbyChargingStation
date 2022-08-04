@@ -1,5 +1,6 @@
 const BigPromise = require("../middlewares/bigPromise");
 const Booking = require("../models/booking");
+const Socket = require("../models/socket");
 const CustomError = require("../utils/customError");
 
 exports.createBooking = BigPromise(async (req, res, next) => {
@@ -12,6 +13,7 @@ exports.createBooking = BigPromise(async (req, res, next) => {
     socket,
     user: req.user._id,
   });
+  await updateSocketStatus(socket, "booked");
   res.status(200).json({
     success: true,
     message: "Booking Created",
@@ -27,7 +29,7 @@ exports.getLoggedInUserBookings = BigPromise(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    orders,
+    bookings,
   });
 });
 exports.updateBooking = BigPromise(async (req, res, next) => {
@@ -48,11 +50,14 @@ exports.updateBooking = BigPromise(async (req, res, next) => {
       booking,
     });
   } else if (req.body.status == "Completed") {
-    (booking.chargeEndTime = req.body.endTime), (booking.status = "Completed");
+    booking.chargeEndTime = req.body.endTime;
+    booking.status = "Completed";
     booking.cost = req.body.cost;
     booking.unitsConsumed = req.body.units;
-    booking.durationOfCharge = booking.chargeEndTime - booking.chargeStartTime;
+    booking.durationOfCharge =
+      (booking.chargeEndTime - booking.chargeStartTime) / 1000;
     await booking.save();
+    await updateSocketStatus(booking.socket, "free");
     res.status(200).json({
       success: true,
       booking,
@@ -71,9 +76,15 @@ exports.cancelBooking = BigPromise(async (req, res, next) => {
   booking.chargeEndTime = null;
   booking.durationOfCharge = null;
   await booking.save();
-
+  await updateSocketStatus(booking.socket, "free");
   res.status(200).json({
     success: true,
     message: "Booking cancelled successfully",
   });
 });
+
+async function updateSocketStatus(socketId, status) {
+  const socket = await Socket.findById(socketId);
+  socket.status = status;
+  await socket.save({ validateBeforeSave: true });
+}

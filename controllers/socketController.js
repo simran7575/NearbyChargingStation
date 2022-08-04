@@ -63,6 +63,7 @@ exports.getSocketsInRange = BigPromise(async (req, res, next) => {
         $maxDistance: 100000,
       },
     },
+    status: "free",
   });
   if (!sockets) {
     next(new CustomError("No Socket found", 400));
@@ -71,5 +72,17 @@ exports.getSocketsInRange = BigPromise(async (req, res, next) => {
   res.status(200).json({
     success: true,
     sockets,
+  });
+});
+exports.getOneSocket = BigPromise(async (req, res, next) => {
+  let socket = await Socket.findById(req.params.id);
+
+  if (!socket) {
+    next(new CustomError("Socket not found", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    socket,
   });
 });

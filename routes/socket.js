@@ -5,12 +5,15 @@ const {
   updateSocket,
   deleteSocket,
   getSocketsInRange,
+  getOneSocket,
 } = require("../controllers/socketController");
 const { isLoggedIn } = require("../middlewares/user");
 
 router.route("/socket/create").post(isLoggedIn, createSocket);
+
 router
   .route("/socket/:id")
+  .get(isLoggedIn, getOneSocket)
   .put(isLoggedIn, updateSocket)
   .delete(isLoggedIn, deleteSocket);
 
