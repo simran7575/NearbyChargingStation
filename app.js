@@ -20,7 +20,11 @@ app.use(morgan("tiny"));
 
 //router middleware
 const user = require("./routes/user");
+const booking = require("./routes/booking");
+const socket = require("./routes/socket");
 
 app.use("/api/v1", user);
+app.use("/api/v1", booking);
+app.use("/api/v1", socket);
 
 module.exports = app;

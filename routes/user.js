@@ -1,8 +1,15 @@
 const express = require("express");
 const router = express.Router();
-const { signup, verifyOtp } = require("../controllers/userConroller");
+const {
+  sendingOtpForSignup,
+  verifyOtpForSignup,
+  verifyOtpForLogin,
+  allUsers,
+} = require("../controllers/userConroller");
 
-router.route("/signup").post(signup);
-router.route("/verify").post(verifyOtp);
+router.route("/signup").post(sendingOtpForSignup);
+router.route("/verify").post(verifyOtpForSignup);
+router.route("/login").post(verifyOtpForLogin);
+router.route("/allusers").get(allUsers);
 
 module.exports = router;

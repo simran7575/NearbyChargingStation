@@ -21,9 +21,10 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   phone: {
-    type: Number,
+    type: String,
     required: [true, "Please add phone number"],
     validate: [validator.isMobilePhone, "Please enter a valid Mobile Number"],
+    unique: true,
   },
 
   createdAt: {
