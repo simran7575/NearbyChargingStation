@@ -5,6 +5,7 @@ const {
   verifyOtpForSignup,
   verifyOtpForLogin,
   allUsers,
+  logout,
 } = require("../controllers/userConroller");
 
 router.route("/signup").post(sendingOtpForSignup);

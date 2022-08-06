@@ -4,8 +4,7 @@
   "description": "Gives all the nearby charging stations for electric bikes",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node index.js"
   },
   "keywords": [
     "express",
