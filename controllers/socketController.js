@@ -5,7 +5,9 @@ const CustomError = require("../utils/customError");
 exports.createSocket = BigPromise(async (req, res, next) => {
   const { address, latitude, longitude, plugType } = req.body;
   if (!address || !latitude || !longitude) {
-    return next(new CustomError("Please provide address and location", 400));
+    res
+      .status(400)
+      .send(CustomError("Please provide address and location", 400));
   }
   const location = {
     type: "Point",
@@ -27,7 +29,7 @@ exports.updateSocket = BigPromise(async (req, res, next) => {
   const socket = await Socket.findById(req.params.id);
 
   if (!socket) {
-    return next(new CustomError("Socket not found", 400));
+    res.status(400).send(CustomError("Socket not found", 400));
   }
   socket.status = req.body.status;
 
@@ -42,7 +44,7 @@ exports.deleteSocket = BigPromise(async (req, res, next) => {
   let socket = await Socket.findById(req.params.id);
 
   if (!socket) {
-    next(new CustomError("Socket not found", 400));
+    res.status(400).send(CustomError("Socket not found", 400));
   }
 
   await socket.remove();
@@ -66,7 +68,7 @@ exports.getSocketsInRange = BigPromise(async (req, res, next) => {
     status: "free",
   });
   if (!sockets) {
-    next(new CustomError("No Socket found", 400));
+    res.status(400).send(CustomError("No Socket found", 400));
   }
 
   res.status(200).json({
@@ -78,7 +80,7 @@ exports.getOneSocket = BigPromise(async (req, res, next) => {
   let socket = await Socket.findById(req.params.id);
 
   if (!socket) {
-    next(new CustomError("Socket not found", 400));
+    res.status(400).send(CustomError("Socket not found", 400));
   }
 
   res.status(200).json({

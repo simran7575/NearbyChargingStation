@@ -8,20 +8,18 @@ const client = require("twilio")(accountSid, authToken);
 
 //signing up using otp authentication
 exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
-  const { phone, isLogin } = req.body;
+  let { phone, isLogin } = req.body;
   phone = "+91" + phone;
   const user = await User.findOne({ phone });
-  {
-    console.log(phone);
-  }
 
   if (user && !isLogin) {
     //next(CustomError("User Already Exist", 400));
-    return next(JSON.stringify(CustomError("User Already Exist", 400)));
+    res.status(400).send(CustomError("User Already Exist", 400));
+
     //next(new CustomError("User Already Exist", 400));
   }
   if (!user && isLogin) {
-    return next(new CustomError("User does not exist", 400));
+    res.status(400).send(CustomError("User does not exist", 400));
   }
 
   const response = await sendOtp(phone);
@@ -33,12 +31,13 @@ exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
 
 //verifying the otp
 exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
-  const { phone, code, firstname, lastname, email } = req.body;
+  let { phone, code, firstname, lastname, email } = req.body;
   if (!phone && !firstname) {
-    return next(
-      new CustomError("Please provide firstname and mobile number", 400)
-    );
+    res
+      .status(400)
+      .send(CustomError("Please provide firstname and mobile number", 400));
   }
+  phone = "+91" + phone;
   const response = await verifyOtp(phone, code);
   if (response.status == "approved") {
     const user = await User.create({
@@ -55,11 +54,13 @@ exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
       token,
     });
   } else {
-    return next(new CustomError("Invalid Token", 400));
+    res.status(400).send(CustomError("Invalid Token", 400));
   }
 });
 exports.verifyOtpForLogin = BigPromise(async (req, res, next) => {
-  const { phone, code } = req.body;
+  let { phone, code } = req.body;
+  phone = "+91" + phone;
+
   const response = await verifyOtp(phone, code);
   const user = await User.findOne({ phone });
   if (response.status == "approved") {
@@ -71,7 +72,7 @@ exports.verifyOtpForLogin = BigPromise(async (req, res, next) => {
       token,
     });
   } else {
-    return next(new CustomError("Invalid Token", 400));
+    res.status(400).send(CustomError("Invalid Token", 400));
   }
 });
 
@@ -90,9 +91,7 @@ async function sendOtp(phone) {
       to: phone,
       channel: "sms",
     });
-  {
-    console.log(response);
-  }
+
   return response;
 }
 

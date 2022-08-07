@@ -6,7 +6,7 @@ const CustomError = require("../utils/customError");
 exports.createBooking = BigPromise(async (req, res, next) => {
   const { socket } = req.body;
   if (!socket) {
-    return next(new CustomError("Please provide socket id", 400));
+    res.status(400).send(CustomError("Please provide socket id", 400));
   }
 
   const booking = await Booking.create({
@@ -24,7 +24,7 @@ exports.createBooking = BigPromise(async (req, res, next) => {
 exports.getLoggedInUserBookings = BigPromise(async (req, res, next) => {
   const bookings = await Booking.find({ user: req.user._id });
   if (!bookings) {
-    return next(new CustomError("No Bookings found", 404));
+    res.status(400).send(CustomError("No Bookings found", 404));
   }
 
   res.status(200).json({
@@ -35,10 +35,12 @@ exports.getLoggedInUserBookings = BigPromise(async (req, res, next) => {
 exports.updateBooking = BigPromise(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id);
   if (!booking) {
-    return next(new CustomError("No Bookings found", 404));
+    res.status(404).send(CustomError("No Bookings found", 404));
   }
   if (booking.status == "Completed" || booking.status == "Cancelled") {
-    return next(new CustomError(`Booking is already ${booking.status} `, 401));
+    res
+      .status(401)
+      .send(CustomError(`Booking is already ${booking.status} `, 401));
   }
   //Ongoing or Completed
   if (req.body.status == "Ongoing") {
@@ -67,7 +69,7 @@ exports.updateBooking = BigPromise(async (req, res, next) => {
 exports.cancelBooking = BigPromise(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id);
   if (!booking) {
-    return next(new CustomError("No Bookings found", 404));
+    res.status(404).send(CustomError("No Bookings found", 404));
   }
   booking.status = "Cancelled";
   booking.cost = null;
