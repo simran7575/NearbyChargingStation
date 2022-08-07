@@ -9,11 +9,15 @@ const client = require("twilio")(accountSid, authToken);
 //signing up using otp authentication
 exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
   const { phone, isLogin } = req.body;
+  phone = "+91" + phone;
   const user = await User.findOne({ phone });
+  {
+    console.log(phone);
+  }
 
   if (user && !isLogin) {
-    next(new Error("User Already Exist"));
-    // res.status(400).send("User Already Exist");
+    //next(CustomError("User Already Exist", 400));
+    return next(JSON.stringify(CustomError("User Already Exist", 400)));
     //next(new CustomError("User Already Exist", 400));
   }
   if (!user && isLogin) {
