@@ -12,7 +12,7 @@ exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
   console.log("body", req.body);
   phone = "+91" + phone;
   const user = await User.findOne({ phone });
-
+  console.log(user);
   if (user && !isLogin) {
     //next(CustomError("User Already Exist", 400));
     console.log("User already exist ");
