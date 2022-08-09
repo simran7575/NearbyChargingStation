@@ -16,10 +16,14 @@ exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
   if (user && !isLogin) {
     //next(CustomError("User Already Exist", 400));
     console.log("User already exist ");
-    res.status(400).send(CustomError("User Already Exist", 400));
+    res.status(400).json({
+      success: false,
+      message: "User already exist",
+    });
+  }
 
-    //next(new CustomError("User Already Exist", 400));
-  } else if (!user && isLogin) {
+  //next(new CustomError("User Already Exist", 400));
+  else if (!user && isLogin) {
     res.status(400).send(CustomError("User does not exist", 400));
   } else {
     const response = await sendOtp(phone);
