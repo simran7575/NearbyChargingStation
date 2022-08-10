@@ -6,7 +6,7 @@ const CustomError = require("../utils/customError");
 exports.createBooking = BigPromise(async (req, res, next) => {
   const { socket } = req.body;
   if (!socket) {
-    res.status(400).send(CustomError("Please provide socket id", 400));
+    return res.status(200).json(CustomError("Please provide socket id", 400));
   }
 
   const booking = await Booking.create({
@@ -14,7 +14,7 @@ exports.createBooking = BigPromise(async (req, res, next) => {
     user: req.user._id,
   });
   await updateSocketStatus(socket, "booked");
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: "Booking Created",
     booking,
@@ -24,10 +24,10 @@ exports.createBooking = BigPromise(async (req, res, next) => {
 exports.getLoggedInUserBookings = BigPromise(async (req, res, next) => {
   const bookings = await Booking.find({ user: req.user._id });
   if (!bookings) {
-    res.status(400).send(CustomError("No Bookings found", 404));
+    return res.status(200).json(CustomError("No Bookings found", 404));
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     bookings,
   });
@@ -35,19 +35,19 @@ exports.getLoggedInUserBookings = BigPromise(async (req, res, next) => {
 exports.updateBooking = BigPromise(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id);
   if (!booking) {
-    res.status(404).send(CustomError("No Bookings found", 404));
+    return res.status(200).json(CustomError("No Bookings found", 404));
   }
   if (booking.status == "Completed" || booking.status == "Cancelled") {
-    res
-      .status(401)
-      .send(CustomError(`Booking is already ${booking.status} `, 401));
+    return res
+      .status(200)
+      .json(CustomError(`Booking is already ${booking.status} `, 401));
   }
   //Ongoing or Completed
   if (req.body.status == "Ongoing") {
     (booking.chargeStartTime = req.body.startTime),
       (booking.status = "Ongoing");
     await booking.save();
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       booking,
     });
@@ -60,7 +60,7 @@ exports.updateBooking = BigPromise(async (req, res, next) => {
       (booking.chargeEndTime - booking.chargeStartTime) / 1000;
     await booking.save();
     await updateSocketStatus(booking.socket, "free");
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       booking,
     });
@@ -69,7 +69,7 @@ exports.updateBooking = BigPromise(async (req, res, next) => {
 exports.cancelBooking = BigPromise(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id);
   if (!booking) {
-    res.status(404).send(CustomError("No Bookings found", 404));
+    return res.status(200).json(CustomError("No Bookings found", 404));
   }
   booking.status = "Cancelled";
   booking.cost = null;
@@ -79,7 +79,7 @@ exports.cancelBooking = BigPromise(async (req, res, next) => {
   booking.durationOfCharge = null;
   await booking.save();
   await updateSocketStatus(booking.socket, "free");
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: "Booking cancelled successfully",
   });

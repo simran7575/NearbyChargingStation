@@ -9,26 +9,18 @@ const client = require("twilio")(accountSid, authToken);
 //signing up using otp authentication
 exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
   let { phone, isLogin } = req.body;
-  console.log("body", req.body);
+
   phone = "+91" + phone;
   const user = await User.findOne({ phone });
-  console.log(user);
-  if (user && !isLogin) {
-    //next(CustomError("User Already Exist", 400));
-    console.log("User already exist ");
-    res.status(200).json({
-      success: false,
-      message: "User already exist",
-    });
-  }
 
-  //next(new CustomError("User Already Exist", 400));
-  else if (!user && isLogin) {
-    res.status(200).send(CustomError("User does not exist", 400));
+  if (user && !isLogin) {
+    return res.status(200).json(CustomError("User Already Exist", 400));
+  } else if (!user && isLogin) {
+    return res.status(200).json(CustomError("User does not exist", 400));
   } else {
     const response = await sendOtp(phone);
-
     res.status(200).json({
+      success: true,
       response,
     });
   }
@@ -38,9 +30,9 @@ exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
 exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
   let { phone, code, firstname, lastname, email } = req.body;
   if (!phone && !firstname) {
-    res
-      .status(400)
-      .send(CustomError("Please provide firstname and mobile number", 400));
+    return res
+      .status(200)
+      .json(CustomError("Please provide firstname and mobile number", 400));
   }
   phone = "+91" + phone;
   const response = await verifyOtp(phone, code);
@@ -51,15 +43,15 @@ exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
       email,
       phone,
     });
-    const token = user.getJwtToken();
-    res.status(200).json({
+    const token = await user.getJwtToken();
+    return res.status(200).json({
       success: "true",
       message: "User created successfully",
       user,
       token,
     });
   } else {
-    res.status(400).send(CustomError("Invalid Token", 400));
+    return res.status(200).json(CustomError("Invalid Token", 400));
   }
 });
 exports.verifyOtpForLogin = BigPromise(async (req, res, next) => {
@@ -69,21 +61,22 @@ exports.verifyOtpForLogin = BigPromise(async (req, res, next) => {
   const response = await verifyOtp(phone, code);
   const user = await User.findOne({ phone });
   if (response.status == "approved") {
-    const token = user.getJwtToken();
-    res.status(200).json({
+    const token = await user.getJwtToken();
+    return res.status(200).json({
       success: "true",
       message: "User logged in  successfully",
       user,
       token,
     });
   } else {
-    res.status(400).send(CustomError("Invalid Token", 400));
+    return res.status(200).json(CustomError("Invalid Token", 400));
   }
 });
 
 exports.allUsers = BigPromise(async (req, res, next) => {
   const users = await User.find();
   res.status(200).json({
+    success: true,
     users,
   });
 });
