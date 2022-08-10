@@ -16,7 +16,7 @@ const corsOpts = {
 
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-app.use(cors(corsOpts));
+app.use(cors());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //regular middleware
