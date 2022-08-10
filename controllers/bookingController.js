@@ -44,8 +44,8 @@ exports.updateBooking = BigPromise(async (req, res, next) => {
   }
   //Ongoing or Completed
   if (req.body.status == "Ongoing") {
-    (booking.chargeStartTime = req.body.startTime),
-      (booking.status = "Ongoing");
+    booking.chargeStartTime = req.body.startTime;
+    booking.status = "Ongoing";
     await booking.save();
     return res.status(200).json({
       success: true,
@@ -72,10 +72,10 @@ exports.cancelBooking = BigPromise(async (req, res, next) => {
     return res.status(200).json(CustomError("No Bookings found", 404));
   }
   booking.status = "Cancelled";
-  booking.cost = null;
-  booking.unitsConsumed = null;
+  booking.cost = 0;
+  booking.unitsConsumed = 0;
   booking.chargeStartTime = null;
-  booking.chargeEndTime = null;
+  booking.chargeEndTime = req.body.endTime;
   booking.durationOfCharge = null;
   await booking.save();
   await updateSocketStatus(booking.socket, "free");
