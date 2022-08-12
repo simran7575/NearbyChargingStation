@@ -22,7 +22,10 @@ exports.createBooking = BigPromise(async (req, res, next) => {
 });
 
 exports.getLoggedInUserBookings = BigPromise(async (req, res, next) => {
-  const bookings = await Booking.find({ user: req.user._id });
+  const bookings = await Booking.find({ user: req.user._id }).populate(
+    "socket",
+    "address"
+  );
   if (!bookings) {
     return res.status(200).json(CustomError("No Bookings found", 404));
   }
