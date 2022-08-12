@@ -5,11 +5,8 @@ const User = require("../models/user");
 
 exports.isLoggedIn = BigPromise(async (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-  res.header("Access-Control-Allow-Headers", "Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Authorization");
   const token = req.header("Authorization").replace("Bearer ", "");
   if (!token) {
     return res
