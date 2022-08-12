@@ -13,6 +13,6 @@ router.route("/booking/create").post(isLoggedIn, createBooking);
 router.route("/booking/cancel/:id").put(isLoggedIn, cancelBooking);
 router.route("/mybookings").get(isLoggedIn, getLoggedInUserBookings);
 router.route("/booking/update/:id").put(isLoggedIn, updateBooking);
-router.route("/onebooking/:id").get(isLoggedIn, getOneBooking);
+router.route("/onebooking:id").get(isLoggedIn, getOneBooking);
 
 module.exports = router;
