@@ -88,7 +88,8 @@ exports.cancelBooking = BigPromise(async (req, res, next) => {
   });
 });
 exports.getOneBooking = BigPromise(async (req, res, next) => {
-  console.log(req.query.id);
+  console.log("Line 91", req.query);
+  console.log("Line 92", req.params);
   const booking = await Booking.findById(req.query.id);
   if (!booking) {
     return res.status(200).json(CustomError("No Bookings found", 404));
