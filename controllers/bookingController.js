@@ -87,6 +87,17 @@ exports.cancelBooking = BigPromise(async (req, res, next) => {
     message: "Booking cancelled successfully",
   });
 });
+exports.getOneBooking = BigPromise(async (req, res, next) => {
+  const booking = await Booking.findById(req.params.id);
+  if (!booking) {
+    return res.status(200).json(CustomError("No Bookings found", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    booking,
+  });
+});
 
 async function updateSocketStatus(socketId, status) {
   const socket = await Socket.findById(socketId);
