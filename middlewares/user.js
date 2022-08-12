@@ -4,9 +4,12 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 exports.isLoggedIn = BigPromise(async (req, res, next) => {
-  console.log("Line 7", req.headers);
-  console.log("Line 8", req.header("authorization"));
-
+  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+  res.header("Access-Control-Allow-Headers", "Authorization");
   const token = req.header("Authorization").replace("Bearer ", "");
   if (!token) {
     return res
