@@ -6,6 +6,7 @@ const {
   verifyOtpForLogin,
   allUsers,
   home,
+  userDetails,
 } = require("../controllers/userConroller");
 const { isLoggedIn } = require("../middlewares/user");
 
