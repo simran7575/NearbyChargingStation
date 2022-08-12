@@ -7,6 +7,7 @@ const {
   allUsers,
   home,
 } = require("../controllers/userConroller");
+const { isLoggedIn } = require("../middlewares/user");
 
 router.route("/signup").post(sendingOtpForSignup);
 router.route("/verify").post(verifyOtpForSignup);
