@@ -36,7 +36,7 @@ exports.getLoggedInUserBookings = BigPromise(async (req, res, next) => {
   });
 });
 exports.updateBooking = BigPromise(async (req, res, next) => {
-  const booking = await Booking.findById(req.params.id);
+  const booking = await Booking.findById(req.body.id);
   if (!booking) {
     return res.status(200).json(CustomError("No Bookings found", 404));
   }
@@ -70,7 +70,6 @@ exports.updateBooking = BigPromise(async (req, res, next) => {
   }
 });
 exports.cancelBooking = BigPromise(async (req, res, next) => {
-  console.log(req.query.id);
   const booking = await Booking.findById(req.query.id);
   if (!booking) {
     return res.status(200).json(CustomError("No Bookings found", 404));
