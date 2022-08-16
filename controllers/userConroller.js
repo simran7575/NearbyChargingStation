@@ -61,7 +61,8 @@ exports.verifyOtpForLogin = BigPromise(async (req, res, next) => {
   const response = await verifyOtp(phone, code);
   const user = await User.findOne({ phone });
   if (response.status == "approved") {
-    const token = await user.getJwtToken();
+    const token = user.getJwtToken();
+    console.log("Line65", user, token);
     return res.status(200).json({
       success: "true",
       message: "User logged in  successfully",
