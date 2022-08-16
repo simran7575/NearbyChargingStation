@@ -15,9 +15,10 @@ exports.isLoggedIn = BigPromise(async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id);
   } catch (error) {
     return res.status(200).json(CustomError("Token has expired", 501));
   }
-  req.user = await User.findById(decoded.id);
+
   next();
 });
