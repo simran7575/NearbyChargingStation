@@ -13,11 +13,9 @@ const userSchema = new mongoose.Schema({
   lastname: {
     type: String,
     maxlength: [40, "Name should be under 40 characters"],
-    validate: [validator.isAlpha, "Name should contain only alphabets"],
   },
   email: {
     type: String,
-    validate: [validator.isEmail, "Plese enter a valid email"],
     unique: true,
   },
   phone: {
