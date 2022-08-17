@@ -43,7 +43,7 @@ exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
       email,
       phone,
     });
-    const token = await user.getJwtToken();
+    const token = user.getJwtToken();
     return res.status(200).json({
       success: "true",
       message: "User created successfully",
