@@ -19,9 +19,10 @@ exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
     return res.status(200).json(CustomError("User does not exist", 400));
   } else {
     const response = await sendOtp(phone);
+    console.log(response);
     res.status(200).json({
       success: true,
-      response: response.data,
+      response,
     });
   }
 });
