@@ -1,0 +1,103 @@
+openapi: 3.0.0
+info:
+  title: Nearby Charging Station API
+  description: Creating APIs to find and book nearby charging station for the electric bike
+  version: 1.1.0
+  contact:
+    email: simranbedi7575@gmail.com
+    url: "https://google.com"
+
+servers:
+  - url: https://nearby-charging-station.herokuapp.com/api/v1
+    description: Main (production) server deployed in heroku
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+paths:
+  /signup:
+    post:
+      tags:
+        - User
+      summary: sending otp to a new or existing user. two fields - phone number and isLogin (required)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+                - isLogin
+              properties:
+                name:
+                  phone: string
+                  required: true
+                isLogin:
+                  type: boolean
+                  required: true
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  response:
+                    type: object
+                    properties:
+                      sid:
+                        type: string
+                      serviceSid:
+                        type: string
+                      accountSid:
+                        type: string
+                      to:
+                        type: string
+                      channel:
+                        type: string
+                      valid:
+                        type: boolean
+                      status:
+                        type: string
+                      lookup:
+                        type: object
+                        properties:
+                          carrier:
+                            type: null
+                      amount:
+                        type: null
+                      payee:
+                        type: null
+                      sendCodeAttempts:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            attempt_sid:
+                              type: string
+                            channel:
+                              type: string
+                            time:
+                              type: string
+                              format: date-time
+                      dateCreated:
+                        type: string
+                        format: date-time
+                      dateUpdated:
+                        type: string
+                        format: date-time
+                      sna:
+                        type: string
+                      url:
+                        type: string
+                        format: uri
+        400:
+          description: Bad request
+        500:
+          description: internal server error
