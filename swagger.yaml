@@ -16,6 +16,53 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
+  schemas:
+    User:
+      type: object
+      properties:
+        __v:
+          type: number
+        _id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        phone:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+
+    Socket:
+      type: object
+      properties:
+        __v:
+          type: number
+        _id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        plugType:
+          type: string
+          enum: [Type-A, Type-C]
+        status:
+          type: string
+          enum: [free, booked]
+        address:
+          type: string
+        location:
+          type: object
+          properties:
+            type:
+              type: string
+            coordinates:
+              type: array
+              items:
+                type: number
 
 paths:
   /signup:
@@ -32,7 +79,7 @@ paths:
                 - phone
                 - isLogin
               properties:
-                name:
+                phone:
                   phone: string
                   required: true
                 isLogin:
@@ -51,12 +98,6 @@ paths:
                   response:
                     type: object
                     properties:
-                      sid:
-                        type: string
-                      serviceSid:
-                        type: string
-                      accountSid:
-                        type: string
                       to:
                         type: string
                       channel:
@@ -79,8 +120,6 @@ paths:
                         items:
                           type: object
                           properties:
-                            attempt_sid:
-                              type: string
                             channel:
                               type: string
                             time:
@@ -94,10 +133,210 @@ paths:
                         format: date-time
                       sna:
                         type: string
-                      url:
-                        type: string
-                        format: uri
         400:
           description: Bad request
+        500:
+          description: internal server error
+
+  /verify:
+    post:
+      tags:
+        - User
+      summary: verifying otp for the new user signing up. required files are - firstname, code and phone. optional fields are - lastname and email.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+                - firstname
+                - code
+              properties:
+                phone:
+                  phone: string
+                  required: true
+                firstname:
+                  type: string
+                  required: true
+                lastname:
+                  type: string
+                email:
+                  type: string
+                code:
+                  type: string
+                  required: true
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  token:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+        400:
+          description: Token Invalid
+        500:
+          description: internal server error
+
+  /login:
+    post:
+      tags:
+        - User
+      summary: verifying otp for the existing user logging in. required files are - code and phone.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone
+                - code
+              properties:
+                phone:
+                  phone: string
+                  required: true
+                code:
+                  type: string
+                  required: true
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  token:
+                    type: string
+                  user:
+                    $ref: "#/components/schemas/User"
+        400:
+          description: Token Invalid
+        500:
+          description: internal server error
+
+  /allusers:
+    get:
+      tags:
+        - User
+      summary: response will be array of all users
+      requestBody:
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user:
+                          $ref: "#/components/schemas/User"
+        400:
+          description: Bad request
+        500:
+          description: internal server error
+  /user:
+    get:
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      summary: response will be the details of the user who is logged in.
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
+      requestBody:
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  user:
+                    $ref: "#/components/schemas/User"
+        400:
+          description: Bad request
+        500:
+          description: internal server error
+
+  /socket/create:
+    post:
+      tags:
+        - Socket
+      security:
+        - bearerAuth: []
+      summary: creating a new socket. required files are - address, latitude and longitude. optional fields is - plugType.
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+            required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - address
+                - latitude
+                - longitude
+              properties:
+                address:
+                  phone: string
+                  required: true
+                latitude:
+                  type: number
+                  required: true
+                longitude:
+                  type: number
+                  required: true
+                plugType:
+                  type: string
+                  enum: [Type-A, Type-C]
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  socket:
+                    $ref: "#/components/schemas/Socket"
+        400:
+          description: Token Invalid
         500:
           description: internal server error

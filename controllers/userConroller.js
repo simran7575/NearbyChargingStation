@@ -19,10 +19,27 @@ exports.sendingOtpForSignup = BigPromise(async (req, res, next) => {
     return res.status(200).json(CustomError("User does not exist", 400));
   } else {
     const response = await sendOtp(phone);
-    console.log(response);
+    responseupdated = {
+      to: response.to,
+      channel: response.channel,
+      status: response.status,
+      valid: response.valid,
+      lookup: response.lookup,
+      amount: response.amount,
+      payee: response.payee,
+      sendCodeAttempts: [
+        {
+          channel: response.sendCodeAttempts[0].channel,
+          time: response.sendCodeAttempts[0].time,
+        },
+      ],
+      dateCreated: response.dateCreated,
+      dateUpdated: response.dateUpdated,
+      sna: response.sna,
+    };
     res.status(200).json({
       success: true,
-      response,
+      response: responseupdated,
     });
   }
 });
@@ -45,6 +62,7 @@ exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
       phone,
     });
     const token = user.getJwtToken();
+
     return res.status(200).json({
       success: "true",
       message: "User created successfully",
@@ -63,7 +81,7 @@ exports.verifyOtpForLogin = BigPromise(async (req, res, next) => {
   const user = await User.findOne({ phone });
   if (response.status == "approved") {
     const token = user.getJwtToken();
-    console.log("Line65", user, token);
+
     return res.status(200).json({
       success: "true",
       message: "User logged in  successfully",
