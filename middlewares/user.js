@@ -7,7 +7,9 @@ exports.isLoggedIn = BigPromise(async (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Authorization");
-  console.log(req.headers);
+  if (!req.header("Authorization")) {
+    return res.status(200).json(CustomError("Token missing", 401));
+  }
   const token = req.header("Authorization").replace("Bearer ", "");
   if (!token) {
     return res

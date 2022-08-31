@@ -63,6 +63,9 @@ components:
               type: array
               items:
                 type: number
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
 
 paths:
   /signup:
@@ -263,12 +266,6 @@ paths:
       security:
         - bearerAuth: []
       summary: response will be the details of the user who is logged in.
-      parameters:
-        - in: header
-          name: Authorization
-          schema:
-            type: string
-            required: true
       requestBody:
 
       responses:
@@ -287,6 +284,8 @@ paths:
           description: Bad request
         500:
           description: internal server error
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
 
   /socket/create:
     post:
@@ -295,12 +294,6 @@ paths:
       security:
         - bearerAuth: []
       summary: creating a new socket. required files are - address, latitude and longitude. optional fields is - plugType.
-      parameters:
-        - in: header
-          name: Authorization
-          schema:
-            type: string
-            required: true
       requestBody:
         content:
           application/json:
@@ -338,5 +331,7 @@ paths:
                     $ref: "#/components/schemas/Socket"
         400:
           description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
         500:
           description: internal server error
