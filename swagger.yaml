@@ -546,7 +546,7 @@ paths:
                     type: boolean
                   message:
                     type: string
-                  socket:
+                  booking:
                     $ref: "#/components/schemas/Booking"
         400:
           description: Token Invalid
@@ -581,6 +581,132 @@ paths:
                       properties:
                         booking:
                           $ref: "#/components/schemas/Booking"
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+
+  /onebooking:
+    get:
+      tags:
+        - Booking
+      security:
+        - bearerAuth: []
+      summary: Getting the details of the booking. required files are - booking id(in query)
+      requestBody:
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: The id of the booking whose details needs to be retrieved.
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  booking:
+                    $ref: "#/components/schemas/Booking"
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+
+  /booking/cancel:
+    put:
+      tags:
+        - Booking
+      security:
+        - bearerAuth: []
+      summary: Cancelling the booking. required files are - socket id(in query).
+      requestBody:
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: The id of the booking that needs to cancelled. The status of the socket will be set to free after cancelling the booking.
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+
+  /booking/update:
+    put:
+      tags:
+        - Booking
+      security:
+        - bearerAuth: []
+      summary: Updating the booking. required files are - socket id(in query).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  required: true
+                  enum: [Ongoing, Completed]
+                startTime:
+                  type: string
+                  format: date-time
+                endTime:
+                  type: string
+                  format: date-time
+                cost:
+                  type: number
+                units:
+                  type: number
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: The id of the booking that needs to updated. The status of the booking will be updated along with other fields.
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  booking:
+                    $ref: "#/components/schemas/Booking"
         400:
           description: Token Invalid
         401:

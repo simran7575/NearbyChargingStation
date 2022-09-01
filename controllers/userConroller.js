@@ -127,8 +127,6 @@ async function verifyOtp(phone, code) {
       to: phone,
       code: code,
     });
-  {
-    console.log(response);
-  }
+
   return response;
 }
