@@ -63,6 +63,28 @@ components:
               type: array
               items:
                 type: number
+    Booking:
+      type: object
+      properties:
+        __v:
+          type: number
+        _id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        user:
+          type: string
+        socket:
+          type: string
+        status:
+          type: string
+          enum: [Upcoming, Ongoing, Completed, Cancelled]
+        unitsConsumed:
+          type: number
+        cost:
+          type: number
+
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
@@ -305,7 +327,7 @@ paths:
                 - longitude
               properties:
                 address:
-                  phone: string
+                  type: string
                   required: true
                 latitude:
                   type: number
@@ -329,6 +351,236 @@ paths:
                     type: boolean
                   socket:
                     $ref: "#/components/schemas/Socket"
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+
+  /socket:
+    put:
+      tags:
+        - Socket
+      security:
+        - bearerAuth: []
+      summary: Updating the status of the socket. required files are - socket id(in query) and status(in body).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [free, booked]
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: The id of the socket whose status needs to be updated.
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  socket:
+                    $ref: "#/components/schemas/Socket"
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+
+    delete:
+      tags:
+        - Socket
+      security:
+        - bearerAuth: []
+      summary: Deleting the socket. required files are - socket id(in query)
+      requestBody:
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: The id of the socket that needs to be deleted.
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+
+    get:
+      tags:
+        - Socket
+      security:
+        - bearerAuth: []
+      summary: Getting the details of the socket. required files are - socket id(in query)
+      requestBody:
+
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          description: The id of the socket that needs to be retrieved.
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  socket:
+                    $ref: "#/components/schemas/Socket"
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+  /sockets:
+    post:
+      tags:
+        - Socket
+      security:
+        - bearerAuth: []
+      summary: Getting all the free sockets with 100km range from current location. required files are - coordinates(latitude and longitude of current user)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - location
+              properties:
+                location:
+                  type: object
+                  required: true
+                  properties:
+                    coordinates:
+                      type: array
+                      items:
+                        type: number
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  sockets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        socket:
+                          $ref: "#/components/schemas/Socket"
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+
+  /booking/create:
+    post:
+      tags:
+        - Booking
+      security:
+        - bearerAuth: []
+      summary: creating a new booking for logged in user. required files are - socket id.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - socket
+              properties:
+                socket:
+                  type: string
+                  required: true
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  socket:
+                    $ref: "#/components/schemas/Booking"
+        400:
+          description: Token Invalid
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          description: internal server error
+
+  /mybookings:
+    get:
+      tags:
+        - Booking
+      security:
+        - bearerAuth: []
+      summary: Getting all the bookings history of the logged in user. User should be logged in.
+      requestBody:
+
+      responses:
+        200:
+          description: All good success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  bookings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        booking:
+                          $ref: "#/components/schemas/Booking"
         400:
           description: Token Invalid
         401:

@@ -26,7 +26,7 @@ exports.createSocket = BigPromise(async (req, res, next) => {
 });
 
 exports.updateSocket = BigPromise(async (req, res, next) => {
-  const socket = await Socket.findById(req.params.id);
+  const socket = await Socket.findById(req.query.id);
 
   if (!socket) {
     return res.status(200).json(CustomError("Socket not found", 400));
@@ -41,7 +41,7 @@ exports.updateSocket = BigPromise(async (req, res, next) => {
   });
 });
 exports.deleteSocket = BigPromise(async (req, res, next) => {
-  let socket = await Socket.findById(req.params.id);
+  let socket = await Socket.findById(req.query.id);
 
   if (!socket) {
     return res.status(200).json(CustomError("Socket not found", 400));
@@ -77,7 +77,7 @@ exports.getSocketsInRange = BigPromise(async (req, res, next) => {
   });
 });
 exports.getOneSocket = BigPromise(async (req, res, next) => {
-  let socket = await Socket.findById(req.params.id);
+  let socket = await Socket.findById(req.query.id);
 
   if (!socket) {
     return res.status(200).json(CustomError("Socket not found", 400));
