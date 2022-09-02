@@ -89,7 +89,7 @@ exports.cancelBooking = BigPromise(async (req, res, next) => {
 exports.getOneBooking = BigPromise(async (req, res, next) => {
   const booking = await Booking.findById(req.query.id).populate(
     "socket",
-    "address plugType"
+    "address plugType location"
   );
   if (!booking) {
     return res.status(200).json(CustomError("No Bookings found", 404));
