@@ -53,44 +53,44 @@ exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
       .json(CustomError("Please provide firstname and mobile number", 400));
   }
   phone = "+91" + phone;
-  const response = await verifyOtp(phone, code);
-  if (response.status == "approved") {
-    const user = await User.create({
-      firstname,
-      lastname,
-      email,
-      phone,
-    });
-    const token = user.getJwtToken();
+  // const response = await verifyOtp(phone, code);
+  // if (response.status == "approved") {
+  const user = await User.create({
+    firstname,
+    lastname,
+    email,
+    phone,
+  });
+  const token = user.getJwtToken();
 
-    return res.status(200).json({
-      success: "true",
-      message: "User created successfully",
-      user,
-      token,
-    });
-  } else {
-    return res.status(200).json(CustomError("Invalid Token", 400));
-  }
+  return res.status(200).json({
+    success: "true",
+    message: "User created successfully",
+    user,
+    token,
+  });
+  // } else {
+  //   return res.status(200).json(CustomError("Invalid Token", 400));
+  // }
 });
 exports.verifyOtpForLogin = BigPromise(async (req, res, next) => {
   let { phone, code } = req.body;
   phone = "+91" + phone;
 
-  const response = await verifyOtp(phone, code);
+  // const response = await verifyOtp(phone, code);
   const user = await User.findOne({ phone });
-  if (response.status == "approved") {
-    const token = user.getJwtToken();
+  // if (response.status == "approved") {
+  const token = user.getJwtToken();
 
-    return res.status(200).json({
-      success: "true",
-      message: "User logged in  successfully",
-      user,
-      token,
-    });
-  } else {
-    return res.status(200).json(CustomError("Invalid Token", 400));
-  }
+  return res.status(200).json({
+    success: "true",
+    message: "User logged in  successfully",
+    user,
+    token,
+  });
+  // } else {
+  //   return res.status(200).json(CustomError("Invalid Token", 400));
+  // }
 });
 
 exports.allUsers = BigPromise(async (req, res, next) => {
