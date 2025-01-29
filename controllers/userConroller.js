@@ -53,9 +53,23 @@ exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
       .json(CustomError("Please provide firstname and mobile number", 400));
   }
   phone = "+91" + phone;
+  const user = await User.findOne({ phone });
+  if (user) {
+    return res.status(200).json(CustomError("User Already Exist", 400));
+  }
+  let userEmail;
+  if (email) {
+    userEmail = await User.findOne({ email });
+    if (userEmail) {
+      return res.status(200).json(CustomError("User Already Exist", 400));
+    }
+  }
+  if (user || userEmail) {
+    return res.status(200).json(CustomError("User Already Exist", 400));
+  }
   // const response = await verifyOtp(phone, code);
   // if (response.status == "approved") {
-  const user = await User.create({
+  const userCreated = await User.create({
     firstname,
     lastname,
     email,
@@ -66,7 +80,7 @@ exports.verifyOtpForSignup = BigPromise(async (req, res, next) => {
   return res.status(200).json({
     success: "true",
     message: "User created successfully",
-    user,
+    userCreated,
     token,
   });
   // } else {
